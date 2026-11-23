@@ -35,6 +35,8 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: var(--header-h);
+  /* Kill page-level sideways scroll on phones; nested scroll areas (tariff table) still work */
+  overflow-x: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -58,9 +60,14 @@ body {
   line-height: 1.6;
   color: var(--text);
   background: var(--white);
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
 }
 
-img {
+img,
+svg,
+video {
   max-width: 100%;
   height: auto;
   display: block;
@@ -89,6 +96,35 @@ p {
 .container {
   width: min(100% - 2rem, var(--content-width));
   margin-inline: auto;
+  max-width: 100%;
+}
+
+main,
+section,
+.hero,
+.features,
+.about,
+.rooms,
+.tariffs,
+.gallery-section,
+.contact,
+.site-footer {
+  max-width: 100%;
+}
+
+/* Don't put overflow clip on sticky header ancestors — it breaks position: sticky */
+.hero,
+.features,
+.about,
+.rooms,
+.gallery-section,
+.contact {
+  overflow-x: clip;
+}
+
+/* Tariff section keeps nested table scroll; clip only the page bleed */
+.tariffs {
+  overflow-x: hidden;
 }
 
 .visually-hidden {
@@ -256,11 +292,13 @@ p {
 .dual-title {
   font-weight: 900;
   line-height: 1.1;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .dual-first {
   font-family: var(--font-sans);
-  font-size: clamp(1.75rem, 5vw, 3.25rem);
+  font-size: clamp(1.35rem, 6vw, 3.25rem);
   font-weight: 900;
   color: var(--dual-red);
 }
@@ -271,7 +309,7 @@ p {
 
 .dual-second {
   font-family: var(--font-serif);
-  font-size: clamp(1.75rem, 5vw, 3.125rem);
+  font-size: clamp(1.35rem, 6vw, 3.125rem);
   font-weight: 900;
   font-style: italic;
   text-transform: lowercase;
@@ -299,21 +337,29 @@ p {
 
 .dual-eyebrow {
   display: block;
-  font-size: clamp(0.7rem, 2vw, 1.05rem);
+  font-size: clamp(0.65rem, 2vw, 1.05rem);
   font-weight: 500;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--about-pink);
   margin-bottom: 0.35rem;
+  overflow-wrap: anywhere;
 }
 
 .dual-headline {
   display: block;
   font-family: var(--font-sans);
-  font-size: clamp(1.6rem, 4vw, 2.75rem);
+  font-size: clamp(1.35rem, 5vw, 2.75rem);
   font-weight: 900;
   line-height: 1.15;
   color: var(--about-purple);
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  .dual-eyebrow {
+    letter-spacing: 0.2em;
+  }
 }
 
 /* Buttons */
@@ -410,10 +456,11 @@ p {
   display: grid;
   place-items: center;
   min-height: min(88vh, 820px);
-  padding: 10rem 1.5rem 5rem;
+  padding: 7rem 1rem 4rem;
   text-align: center;
   color: var(--text-dark);
   background: url("../assets/images/home-banner-1.webp") center / cover no-repeat;
+  overflow: hidden;
 }
 
 .hero .shape-divider {
@@ -423,18 +470,32 @@ p {
 .hero-content {
   position: relative;
   z-index: 1;
-  max-width: 40rem;
+  max-width: min(40rem, 100%);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .hero {
+    padding: 10rem 1.5rem 5rem;
+  }
 }
 
 .hero-eyebrow {
   font-family: var(--font-sans);
-  font-size: clamp(0.95rem, 2vw, 1.2rem);
+  font-size: clamp(0.8rem, 2.4vw, 1.2rem);
   font-weight: 500;
-  letter-spacing: 0.35em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #000;
   margin-bottom: 0.75rem;
   text-shadow: 0 1px 2px rgb(255 255 255 / 0.7);
+  padding-inline: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .hero-eyebrow {
+    letter-spacing: 0.35em;
+  }
 }
 
 .hero-lead {
@@ -615,7 +676,9 @@ p {
 
 .table-wrap {
   overflow-x: auto;
+  overscroll-behavior-x: contain;
   margin-bottom: 2.5rem;
+  max-width: 100%;
   -webkit-overflow-scrolling: touch;
   box-shadow:
     0 8px 20px rgb(0 0 0 / 0.1),
@@ -625,15 +688,26 @@ p {
 .tariff-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 32rem;
+  min-width: 28rem;
   font-size: 0.95rem;
 }
 
 .tariff-table th,
 .tariff-table td {
   border: 1px solid #cbd5e0;
-  padding: 0.75rem 1rem;
+  padding: 0.55rem 0.65rem;
   text-align: center;
+}
+
+@media (min-width: 768px) {
+  .tariff-table {
+    min-width: 0;
+  }
+
+  .tariff-table th,
+  .tariff-table td {
+    padding: 0.75rem 1rem;
+  }
 }
 
 .tariff-table thead tr:first-child th {
@@ -755,6 +829,13 @@ p {
     0 10px 28px rgb(0 0 0 / 0.16),
     0 2px 8px rgb(0 0 0 / 0.08);
   padding: 1.5rem;
+  max-width: 100%;
+}
+
+.inquiry-form,
+.field input,
+.field textarea {
+  max-width: 100%;
 }
 
 .inquiry-box h3,
@@ -870,12 +951,13 @@ p {
 /* WhatsApp float */
 .wa-float {
   position: fixed;
-  right: 1.25rem;
-  bottom: 1.25rem;
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
   z-index: 90;
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  max-width: calc(100vw - 1.5rem);
 }
 
 .wa-float-label {
@@ -886,6 +968,10 @@ p {
   border-radius: 999px;
   font-size: 0.85rem;
   box-shadow: 0 4px 16px rgb(0 0 0 / 0.18);
+  max-width: 12rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .wa-float-btn {
@@ -893,6 +979,7 @@ p {
   place-items: center;
   width: 3.4rem;
   height: 3.4rem;
+  flex-shrink: 0;
   border-radius: 50%;
   background: #25d366;
   color: var(--white);
@@ -905,7 +992,7 @@ p {
   filter: brightness(1.08);
 }
 
-@media (max-width: 520px) {
+@media (max-width: 640px) {
   .wa-float-label {
     display: none;
   }
@@ -934,8 +1021,10 @@ p {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: min(96vw, 1100px);
-  max-height: 88vh;
+  max-width: min(96dvw, 1100px);
+  max-height: min(88dvh, 88vh);
+  width: auto;
+  height: auto;
   object-fit: contain;
 }
 
